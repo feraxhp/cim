@@ -2,6 +2,7 @@ mod conversion;
 
 use crate::conversion::image_to_jpg::image_to_jpg;
 use crate::conversion::load_image::load_image;
+use crate::conversion::svg_to_png::svg_to_png;
 use std::{env, fs};
 use std::ops::Add;
 use std::path::Path;
@@ -10,35 +11,43 @@ use std::error::Error;
 fn main() {
 
     for argument in env::args() {
-        if argument == "--help" {
-            println!("You passed --help as one of the arguments!");
-        }
+
     }
 
     // let converter = (image_to_webp, ".webp");
-    let converter = (image_to_jpg, ".jpg");
-    // let converter =(image_to_png, ".png");
+    // let converter = (image_to_jpg, ".jpg");
+    // // let converter =(image_to_png, ".png");
+    //
+    // let files = get_files("images");
+    //
+    // for input in files.iter(){
+    //     print!("{input}: ");
+    //
+    //     let output = input.replace(".", "-") + converter.1;
+    //     let output = output.replace("images", "output");
+    //
+    //     let img = match load_image(input) {
+    //         Ok(image) => image,
+    //         Err(e) => {
+    //             println!("{e}");
+    //             continue
+    //         }
+    //     };
+    //
+    //     match converter.0(img, output.as_str(), 75.0) {
+    //         Ok(_) => println!("Imagen convertida exitosamente."),
+    //         Err(e) => println!("Error al convertir la imagen: {}", e),
+    //     }
+    // }
 
-    let files = get_files("images");
-
-    for input in files.iter(){
-        print!("{input}: ");
-
-        let output = input.replace(".", "-") + converter.1;
-        let output = output.replace("images", "output");
-
-        let img = match load_image(input) {
-            Ok(image) => image,
-            Err(e) => {
-                println!("{e}");
-                continue
-            }
-        };
-
-        match converter.0(img, output.as_str(), 75.0) {
-            Ok(_) => println!("Imagen convertida exitosamente."),
-            Err(e) => println!("Error al convertir la imagen: {}", e),
-        }
+    match svg_to_png(
+        "images/python-package.svg",
+        "output.png",
+        2024,
+        2024
+    ) {
+        Ok(_) => println!("Conversión exitosa"),
+        Err(e) => eprintln!("Error: {}", e),
     }
 }
 
