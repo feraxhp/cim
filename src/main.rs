@@ -1,12 +1,13 @@
 mod conversion;
 
-use crate::conversion::image_to_jpg::image_to_jpg;
+use crate::conversion::save_as_format::save_as_format;
 use crate::conversion::load_image::load_image;
-use crate::conversion::svg_to_png::svg_to_png;
+use crate::conversion::load_svg::load_svg;
 use std::{env, fs};
 use std::ops::Add;
 use std::path::Path;
 use std::error::Error;
+use image::ImageFormat;
 
 fn main() {
 
@@ -40,13 +41,20 @@ fn main() {
     //     }
     // }
 
-    match svg_to_png(
+    match load_svg(
         "images/python-package.svg",
         "output.png",
         2024,
         2024
     ) {
-        Ok(_) => println!("Conversión exitosa"),
+        Ok(image) => match save_as_format(
+            image,
+            "output.jpg",
+            ImageFormat::Jpeg
+        ) {
+            Ok(_) => println!("Imagen convertida exitosamente."),
+            Err(e) => eprintln!("Error: {}", e),
+        },
         Err(e) => eprintln!("Error: {}", e),
     }
 }
