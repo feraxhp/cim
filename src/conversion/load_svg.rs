@@ -1,12 +1,13 @@
 use resvg::usvg::{Tree, Options, tiny_skia_path};
 use std::fs;
+use image::{DynamicImage, RgbaImage};
 
-pub(crate) fn svg_to_png(
+pub(crate) fn load_svg(
     svg_path: &str,
     export_path: &str,
     width: u32,
     height: u32
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<DynamicImage, Box<dyn std::error::Error>> {
 
     // load SVG
     let svg_data = fs::read(svg_path)?;
@@ -25,8 +26,10 @@ pub(crate) fn svg_to_png(
 
     resvg::render(&tree, tiny_skia_path::Transform::from_scale(sx, sy), &mut pixmapmut);
 
-    // save PNG
-    pixmap.save_png(export_path)?;
+    let image = DynamicImage::ImageRgba8(
+        RgbaImage::from_raw(width, height, pixmap.data().to_vec())
+            .ok_or("Failed to convert pixmap to DynamicImage")?
+    );
 
-    Ok(())
+    Ok(image)
 }
