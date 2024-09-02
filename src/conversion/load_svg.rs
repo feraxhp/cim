@@ -4,7 +4,6 @@ use image::{DynamicImage, RgbaImage};
 
 pub(crate) fn load_svg(
     svg_path: &str,
-    export_path: &str,
     width: u32,
     height: u32
 ) -> Result<DynamicImage, Box<dyn std::error::Error>> {
@@ -18,7 +17,7 @@ pub(crate) fn load_svg(
     let width = if width == 0 { tree.size().width() as u32 } else { width };
     let height = if height == 0 { tree.size().height() as u32 } else { height };
 
-    let mut pixmap = tiny_skia::Pixmap::new(width, height).ok_or("Incorrect svg format")?;
+    let mut pixmap = tiny_skia::Pixmap::new(width, height).ok_or("Incorrect svg Format")?;
     let mut pixmapmut = pixmap.as_mut();
 
     let sy: f32 = (width as f32)/tree.size().width();
