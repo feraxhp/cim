@@ -32,7 +32,7 @@ pub(crate) fn save_as_format(
         img
     };
 
-    // save image with specified format
+    // save image with specified Format
     rgb_img.save_with_format(output_path, format)?;
 
     Ok(())
