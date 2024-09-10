@@ -30,7 +30,7 @@ You need to have [Rust](https://www.rust-lang.org/tools/install) installed on yo
   - quality is required.
 
 ## Usage
-
+```bash
 cim [format] <input> <output> [options]
 
 Arguments:
@@ -44,6 +44,7 @@ Options:
   -q, --quality <value>  Quality of the output image (only for image to WebP) [default: 100]
       --help             Prints help information
   -V, --version          Print version
+```
 
 ## Build and Run
 ```bash
