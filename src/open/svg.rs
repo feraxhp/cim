@@ -2,13 +2,12 @@ use resvg::usvg::{Tree, Options, tiny_skia_path};
 use std::fs;
 use image::{DynamicImage, RgbaImage};
 
-pub(crate) fn load_svg(
+pub(crate) fn open(
     svg_path: &str,
     width: u32,
     height: u32
 ) -> Result<DynamicImage, Box<dyn std::error::Error>> {
 
-    // load SVG
     let svg_data = fs::read(svg_path)?;
 
     let options = Options::default();
