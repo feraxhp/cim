@@ -1,4 +1,5 @@
-use clap::{arg, command, crate_description, value_parser, Arg, ArgAction, Command};
+use clap::{arg, command, crate_description, value_parser, Arg, ArgAction, ArgMatches, Command};
+use clap::builder::{PathBufValueParser, ValueParser};
 use color_print::cformat;
 use crate::formats::supported::SUPPORTED_INPUT_FORMATS;
 use crate::formats::validate::input;
@@ -11,6 +12,11 @@ pub(crate) fn cim_command() -> Command {
         .args([
             arg!(<format> "Desired format for the converted image.")
                 .value_parser(parser)
+            ,
+            arg!(<input> "Path to the image or directory")
+                .value_parser()
+            ,
+            arg!([output] "Output path to the image or directory")
             ,
             dimension_arg("height", 'h'),
             dimension_arg("width", 'w'),
