@@ -1,9 +1,10 @@
 use resvg::usvg::{Tree, Options, tiny_skia_path};
 use std::fs;
+use std::path::PathBuf;
 use image::{DynamicImage, RgbaImage};
 
 pub(crate) fn load_svg(
-    svg_path: &str,
+    svg_path: &PathBuf,
     width: u32,
     height: u32
 ) -> Result<DynamicImage, Box<dyn std::error::Error>> {

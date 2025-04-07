@@ -5,13 +5,17 @@ use tools::*;
 
 use clap::builder::{TypedValueParser, ValueParser};
 use clap::{arg, command, value_parser, ArgAction};
-use color_print::cprintln;
+use color_print::{cformat, cprintln};
 use std::any::Any;
 use std::error::Error;
 use std::ops::Add;
 use std::path::PathBuf;
 use std::process::exit;
-use std::env;
+use std::{env, fs, path};
+use image::{math, DynamicImage, ImageFormat};
+use crate::conversion::load_any_image::load_any_image;
+use crate::conversion::save_as_format::save_as_format;
+use crate::conversion::save_as_webp::save_as_webp;
 use crate::tools::files::get_images;
 
 fn main() {
@@ -24,9 +28,9 @@ fn main() {
                 .value_parser(format::is_valid_format)
         )
         .arg(arg!(<input> "Input file/directory path").id("input")
-             .required(true)
-             .value_hint(clap::ValueHint::DirPath)
-             .value_parser(ValueParser::path_buf())
+            .required(true)
+            .value_hint(clap::ValueHint::DirPath)
+            .value_parser(ValueParser::path_buf())
         )
         .arg(arg!(<output> "Output file/directory path *(optional)")
             .required(false)
@@ -57,19 +61,31 @@ fn main() {
     let quality = conversion.get_one::<f32>("quality").unwrap();
 
     let input = match conversion.get_one::<PathBuf>("input") {
-        Some(path) => path,
+        Some(path_) => match path::absolute(path_) {
+            Ok(path_) => { path_ }
+            Err(_) => {
+                cprintln!("<r>* Error: Could not determine the input path</>");
+                exit(1);
+            }
+        },
         None => {
-            cprintln!("<r>* Error: Could not determine input path</>");
+            cprintln!("<r>* Error: Could not determine the input path</>");
             exit(1);
         }
     };
 
     let output = match conversion.get_one::<PathBuf>("output") {
-        Some(path) => path.clone(),
+        Some(path_) => match path::absolute(path_) {
+            Ok(path_) => { path_ }
+            Err(_) => {
+                cprintln!("<r>* Error: Could not get the output path</>");
+                exit(1);
+            }
+        },
         None => env::current_dir().unwrap()
     };
 
-    let images = match get_images(input) {
+    let images = match get_images(&input) {
         Ok(images) => images,
         Err(message) => {
             cprintln!("{}", message);
@@ -77,4 +93,78 @@ fn main() {
         }
     };
 
+    let mut dynamic_images: Vec<(&PathBuf,DynamicImage)> = Vec::new();
+    // let mut errors: Vec<String> = Vec::new();
+
+    for image in &images {
+        match load_any_image(image, *width, *height) {
+            Ok(output) => dynamic_images.push((image, output)),
+            Err(error) => {
+                let name = image.file_name().unwrap().to_str().unwrap();
+                // errors.push(cformat!("Image {}, couldn't be load", name, error));
+                cprintln!("<r>⨯</> Error loading: {} | {}", name, error);
+            }
+        }
+    }
+
+    for tuple in dynamic_images {
+        let dynamic_image: DynamicImage = tuple.1;
+        let input: &PathBuf = tuple.0;
+
+        if !output.exists() && output.extension().is_none() {
+            let output_ = output.as_path().to_str().unwrap();
+            match fs::create_dir_all(&output){
+                Ok(_) => {
+                    cprintln!("<g>✓ created:</> {}", output_);
+                }
+                Err(error) => {
+                    cprintln!("<r>* Error:</> creating directory: {}", output_);
+                    cprintln!("  → {:#?}", error);
+
+                }
+            }
+        }
+
+        let output = match output.is_dir() {
+            true => output.clone(),
+            false => output.clone().parent().unwrap().to_path_buf()
+        };
+
+        let input_ = input.file_stem().unwrap().to_str().unwrap();
+        let output = output.join(format!("{}.{}", input_, &format));
+
+        let on_success = || {
+            let input = input.as_os_str().to_str().unwrap();
+            let output = output.as_path().to_str().unwrap();
+            cprintln!("<g>✓ saved:</> {} -> {}", input, output);
+        };
+
+        let on_error = || {
+            let input = input.as_os_str().to_str().unwrap();
+            let output = output.as_path().to_str().unwrap();
+            cprintln!("<r>⨯ error:</> {} -> {}", input, output);
+        };
+
+        match format.as_str() {
+            "webp" => {
+                match save_as_webp(dynamic_image, &output, *quality) {
+                    Ok(_) => on_success(),
+                    Err(error) => {
+                        on_error();
+                        eprintln!("  → {:#?}", error);
+                    }
+                }
+            }
+            _ => {
+                let format = ImageFormat::from_extension(&format).unwrap();
+                match save_as_format(dynamic_image, &output, format) {
+                    Ok(_) => on_success(),
+                    Err(error) => {
+                        on_error();
+                        eprintln!("  → {:#?}", error);
+                    }
+                }
+            }
+        }
+    }
 }

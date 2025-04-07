@@ -1,4 +1,4 @@
-
+use std::path::PathBuf;
 use image::{Rgba, Rgb, ImageBuffer, ImageFormat, DynamicImage};
 
 fn rgba_to_rgb(rgba: ImageBuffer<Rgba<u8>, Vec<u8>>) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
@@ -19,7 +19,7 @@ fn rgba_to_rgb(rgba: ImageBuffer<Rgba<u8>, Vec<u8>>) -> ImageBuffer<Rgb<u8>, Vec
 
 pub(crate) fn save_as_format(
     img: DynamicImage,
-    output_path: &str,
+    output: &PathBuf,
     format: ImageFormat
 ) -> Result<(), Box<dyn std::error::Error>> {
     let rgb_img = if format == ImageFormat::Jpeg {
@@ -33,7 +33,7 @@ pub(crate) fn save_as_format(
     };
 
     // save image with specified Format
-    rgb_img.save_with_format(output_path, format)?;
+    rgb_img.save_with_format(output, format)?;
 
     Ok(())
 }
