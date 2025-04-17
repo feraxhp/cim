@@ -12,11 +12,15 @@ use std::ops::Add;
 use std::path::PathBuf;
 use std::process::exit;
 use std::{env, fs, path};
+use std::env::current_dir;
+use std::ffi::OsStr;
 use image::{math, DynamicImage, ImageFormat};
 use crate::conversion::load_any_image::load_any_image;
 use crate::conversion::save_as_format::save_as_format;
 use crate::conversion::save_as_webp::save_as_webp;
 use crate::tools::files::get_images;
+use path_absolutize::*;
+use crate::tools::paths::path_to_absolute;
 
 fn main() {
     let conversion = command!()
@@ -61,10 +65,11 @@ fn main() {
     let quality = conversion.get_one::<f32>("quality").unwrap();
 
     let input = match conversion.get_one::<PathBuf>("input") {
-        Some(path_) => match path::absolute(path_) {
+        Some(path_) => match path_to_absolute(&path_) {
             Ok(path_) => { path_ }
-            Err(_) => {
+            Err(error) => {
                 cprintln!("<r>* Error: Could not determine the input path</>");
+                cprintln!("  → {}", error);
                 exit(1);
             }
         },
@@ -75,14 +80,22 @@ fn main() {
     };
 
     let output = match conversion.get_one::<PathBuf>("output") {
-        Some(path_) => match path::absolute(path_) {
+        Some(path_) => match  path_to_absolute(path_) {
             Ok(path_) => { path_ }
-            Err(_) => {
+            Err(error) => {
                 cprintln!("<r>* Error: Could not get the output path</>");
+                cprintln!("  → {}", error);
                 exit(1);
             }
         },
-        None => env::current_dir().unwrap()
+        None => match env::current_dir() {
+            Ok(path) => { path }
+            Err(error) => {
+                cprintln!("<r>* Error: Could not get the output path</>");
+                cprintln!("  → {:#?}", error);
+                exit(1);
+            }
+        }
     };
 
     let images = match get_images(&input) {
@@ -111,27 +124,18 @@ fn main() {
         let dynamic_image: DynamicImage = tuple.1;
         let input: &PathBuf = tuple.0;
 
-        if !output.exists() && output.extension().is_none() {
-            let output_ = output.as_path().to_str().unwrap();
-            match fs::create_dir_all(&output){
-                Ok(_) => {
-                    cprintln!("<g>✓ created:</> {}", output_);
-                }
-                Err(error) => {
-                    cprintln!("<r>* Error:</> creating directory: {}", output_);
-                    cprintln!("  → {:#?}", error);
-
-                }
+        let output = match output.extension() {
+            None => {
+                let input_ = input.file_stem().unwrap().to_str().unwrap();
+                output.join(format!("{}.{}", input_, &format))
             }
-        }
-
-        let output = match output.is_dir() {
-            true => output.clone(),
-            false => output.clone().parent().unwrap().to_path_buf()
+            Some(_) => {
+                output.clone()
+            }
         };
 
-        let input_ = input.file_stem().unwrap().to_str().unwrap();
-        let output = output.join(format!("{}.{}", input_, &format));
+        let parent = output.parent().unwrap();
+        fs::create_dir_all(parent).unwrap();
 
         let on_success = || {
             let input = input.as_os_str().to_str().unwrap();
