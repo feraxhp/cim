@@ -1,0 +1,30 @@
+on:
+  workflow_dispatch:
+  workflow_call:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: cargo build --release --verbose
+
+      - name: get version
+        id: get_version
+        shell: bash
+        run: echo "version=$(.\\target\\release\\cim.exe -v)" >> $GITHUB_ENV
+
+      - uses: AButler/upload-release-assets@v3.0
+        name: Upload release assets
+        with:
+          files: "target/release/grp.exe"
+          repo-token: ${{ github.token }}
+          release-tag: "v${{ env.version }}"
