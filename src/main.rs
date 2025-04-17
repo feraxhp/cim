@@ -113,9 +113,9 @@ fn main() {
         match load_any_image(image, *width, *height) {
             Ok(output) => dynamic_images.push((image, output)),
             Err(error) => {
-                let name = image.file_name().unwrap().to_str().unwrap();
-                // errors.push(cformat!("Image {}, couldn't be load", name, error));
-                cprintln!("<r>⨯</> Error loading: {} | {}", name, error);
+                let name = image.to_str().unwrap();
+                cprintln!("<r>⨯ Error:</> loading: <b,u>{}</>", name);
+                cprintln!("  → {:#?}", error);
             }
         }
     }
