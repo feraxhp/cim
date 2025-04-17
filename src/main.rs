@@ -116,6 +116,7 @@ fn main() {
                 let name = image.to_str().unwrap();
                 cprintln!("<r>⨯ Error:</> loading: <b,u>{}</>", name);
                 cprintln!("  → {:#?}", error);
+                cprintln!("---");
             }
         }
     }
