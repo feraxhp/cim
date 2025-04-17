@@ -4,16 +4,17 @@ mod tools;
 use tools::*;
 
 use clap::builder::{TypedValueParser, ValueParser};
-use clap::{arg, command, value_parser, ArgAction};
+use clap::{arg, command, crate_version, value_parser, ArgAction};
 use color_print::{cformat, cprintln};
 use std::any::Any;
 use std::error::Error;
 use std::ops::Add;
 use std::path::PathBuf;
 use std::process::exit;
-use std::{env, fs, path};
+use std::{env, fs, io, path};
 use std::env::current_dir;
 use std::ffi::OsStr;
+use std::io::Write;
 use image::{math, DynamicImage, ImageFormat};
 use crate::conversion::load_any_image::load_any_image;
 use crate::conversion::save_as_format::save_as_format;
@@ -56,8 +57,21 @@ fn main() {
             .default_value("100")
             .value_parser(value_parser!(f32))
         )
+        .arg(arg!(-v --vnumber "Prints the version number to the standard output").exclusive(true))
         .arg(arg!(   --help "Prints help information").action(ArgAction::Help))
         .get_matches();
+
+    match conversion.clone().args_present() {
+        true => {
+            if *conversion.get_one::<bool>("vnumber").unwrap_or(&false) {
+                let version = crate_version!();
+                let _ = io::stdout().write(version.as_bytes());
+                println!();
+                exit(0);
+            }
+        },
+        _ => {}
+    }
 
     let format = conversion.get_one::<String>("format").unwrap().to_lowercase();
     let width = conversion.get_one::<u32>("width").unwrap();
