@@ -62,10 +62,11 @@ cargo install --path .
 
 ## to do
 - [ ] Create distribution packages
-  - [ ] deb
-  - [ ] rpm
+  - [x] deb
+  - [x] rpm
   - [ ] pacman
   - [ ] Windows installer
+  - [x] Windows exe
   - [ ] macOS brew
 
 - [ ] Add more image formats
