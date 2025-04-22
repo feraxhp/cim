@@ -2,25 +2,22 @@
 
 A simple CLI tool written in Rust for easily converting between various image formats.
 
-You need to have [Rust](https://www.rust-lang.org/tools/install) installed on your system to build this project.
+## Supported output formats
 
-## supported formats
+| Png      | Jpeg     |
+| -------- | -------- |
+| WebP     | Gif      |
+| Pnm      | Tiff     |
+| Tga      | Dds      |
+| Bmp      | Ico      |
+| Hdr      | OpenExr  |
+| Farbfeld | Avif     |
+| Qoi      |          |
 
-- Png,
-- Jpeg,
-- WebP,
-- Gif,
-- Pnm,
-- Tiff,
-- Tga,
-- Dds,
-- Bmp,
-- Ico,
-- Hdr,
-- OpenExr,
-- Farbfeld,
-- Avif,
-- Qoi,
+## Supported input formats
+
+- All output formats
+- SVG
 
 ### Note
 - svg is only supported as input format.
@@ -43,6 +40,7 @@ Options:
   -h, --height <value>   Height of the output image (only for SVG to image) [default: 0]
   -q, --quality <value>  Quality of the output image (only for image to WebP) [default: 100]
       --help             Prints help information
+  -v, --vnumber          Prints the version number
   -V, --version          Print version
 ```
 
