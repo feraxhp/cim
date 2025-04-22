@@ -19,12 +19,14 @@ A simple CLI tool written in Rust for easily converting between various image fo
 - All output formats
 - SVG
 
-### Note
-- svg is only supported as input format.
-  - it supports resizing. 
-    - width and height are required.
-- webp supports lossless and lossy compression.
-  - quality is required.
+> [!Note]
+> `svg` is only supported as input format.
+> And supports resizing.
+> - _width_ and _height_ are required.
+
+> [!Note]
+> `webp` supports lossless and lossy compression.
+>  - _quality_ is required.
 
 ## Usage
 ```bash
