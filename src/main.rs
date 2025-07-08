@@ -1,10 +1,8 @@
 mod conversion;
+mod commands;
 mod tools;
 
-use tools::*;
-
-use clap::builder::ValueParser;
-use clap::{arg, command, crate_version, value_parser, ArgAction};
+use clap::crate_version;
 use color_print::cprintln;
 use std::path::PathBuf;
 use std::process::exit;
@@ -19,42 +17,7 @@ use crate::tools::paths::path_to_absolute;
 
 
 fn main() {
-    let conversion = command!()
-        .name("cim (convert image)")
-        .about("Convert images to different formats")
-        .disable_help_flag(true)
-        .arg(
-            arg!(<format> "The desire file Format")
-                .value_parser(format::is_valid_format)
-        )
-        .arg(arg!(<input> "Input file/directory path").id("input")
-            .required(true)
-            .value_hint(clap::ValueHint::DirPath)
-            .value_parser(ValueParser::path_buf())
-        )
-        .arg(arg!(<output> "Output file/directory path *(optional)")
-            .required(false)
-            .value_hint(clap::ValueHint::DirPath)
-            .value_parser(ValueParser::path_buf())
-        )
-        .arg(arg!(-w --width <value> "Width of the output image (only for SVG to image)")
-            .required(false)
-            .default_value("0")
-            .value_parser(value_parser!(u32))
-        )
-        .arg(arg!(-h --height <value> "Height of the output image (only for SVG to image)")
-            .required(false)
-            .default_value("0")
-            .value_parser(value_parser!(u32))
-        )
-        .arg(arg!(-q --quality <value> "Quality of the output image (only for image to WebP)")
-            .required(false)
-            .default_value("100")
-            .value_parser(value_parser!(f32))
-        )
-        .arg(arg!(-v --vnumber "Prints the version number to the standard output").exclusive(true))
-        .arg(arg!(   --help "Prints help information").action(ArgAction::Help))
-        .get_matches();
+    let conversion = commands::base::command().get_matches();
 
     match conversion.clone().args_present() {
         true => {
@@ -116,7 +79,6 @@ fn main() {
     };
 
     let mut dynamic_images: Vec<(&PathBuf,DynamicImage)> = Vec::new();
-    // let mut errors: Vec<String> = Vec::new();
 
     for image in &images {
         match load_any_image(image, *width, *height) {
