@@ -20,7 +20,7 @@ jobs:
       - name: get version
         id: version
         shell: bash
-        run: echo "version=$(.\\target\\release\\grp.exe -v)" >> $GITHUB_ENV
+        run: echo "version=$(.\\target\\release\\cim.exe -v)" >> $GITHUB_ENV
         
       - name: get numeric version
         id: numeric_version
