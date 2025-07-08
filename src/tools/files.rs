@@ -10,7 +10,7 @@ fn get_images_from_dir(dir: &PathBuf) -> Vec<PathBuf> {
             .filter_map(|entry| {
                 if !entry.file_type().ok()?.is_file() { return None; }
                 if let Some(extension) = entry.path().extension() {
-                    if (is_read_supported_format(extension.to_str().unwrap())) {
+                    if is_read_supported_format(extension.to_str().unwrap()) {
                         return Some(entry.path())
                     }
                 }

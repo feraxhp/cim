@@ -3,25 +3,20 @@ mod tools;
 
 use tools::*;
 
-use clap::builder::{TypedValueParser, ValueParser};
+use clap::builder::ValueParser;
 use clap::{arg, command, crate_version, value_parser, ArgAction};
-use color_print::{cformat, cprintln};
-use std::any::Any;
-use std::error::Error;
-use std::ops::Add;
+use color_print::cprintln;
 use std::path::PathBuf;
 use std::process::exit;
-use std::{env, fs, io, path};
-use std::env::current_dir;
-use std::ffi::OsStr;
+use std::{env, fs, io};
 use std::io::Write;
-use image::{math, DynamicImage, ImageFormat};
+use image::{DynamicImage, ImageFormat};
 use crate::conversion::load_any_image::load_any_image;
 use crate::conversion::save_as_format::save_as_format;
 use crate::conversion::save_as_webp::save_as_webp;
 use crate::tools::files::get_images;
-use path_absolutize::*;
 use crate::tools::paths::path_to_absolute;
+
 
 fn main() {
     let conversion = command!()
