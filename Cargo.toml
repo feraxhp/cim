@@ -1,10 +1,11 @@
 [package]
 name = "cim"
-version = "0.1.0-alpha"
-edition = "2021"
+version = "0.1.1-alpha"
+edition = "2024"
 license = "MIT"
-authors = ["feraxhp"]
+authors = ["feraxhp <feraxhp+gh@gmail.com>"]
 description = "A simple CLI tool to convert between image formats"
+homepage = "https://github.com/feraxhp/cim"
 
 [dependencies]
 image = "0.25.2"
@@ -15,6 +16,8 @@ tiny-skia = "0.11.4"
 clap = { version = "4.5.16", features = ["cargo"] }
 path-absolutize = "3.1.1"
 
+[build-dependencies]
+winres = "0.1"
 
 [package.metadata.generate-rpm]
 url="https://github.com/feraxhp/cim"
