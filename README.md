@@ -1,5 +1,8 @@
 # CIM (CONVERT IMAGE)
 
+[![.github/workflows/Releases.yml](https://github.com/feraxhp/cim/actions/workflows/Releases.yml/badge.svg)](https://github.com/feraxhp/cim/actions/workflows/Releases.yml)
+![WinGet Package Version](https://img.shields.io/winget/v/feraxhp.cim?style=flat&color=green)
+
 A simple CLI tool written in Rust for easily converting between various image formats.
 
 ## Supported output formats
