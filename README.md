@@ -28,6 +28,29 @@ A simple CLI tool written in Rust for easily converting between various image fo
 > `webp` supports lossless and lossy compression.
 >  - _quality_ is required.
 
+## Installation
+
+- Windows: Download the latest .exe from the releases page.
+    - `cim.exe` is the portable version
+    - `cim-**-x86_64.msi` is the installer
+    - Or use winget.
+    ~~~bash
+    winget install --id feraxhp.cim
+    ~~~
+- Ubuntu: See releases page for the latest deb package.
+```bash
+wget -O paquete.deb <URL_DEL_PAQUETE> 
+dpkg sudo dpkg -i paquete.deb 
+sudo apt-get install -f
+```
+- fedora: See releases page for the latest rpm package.
+```bash
+sudo dnf install <URL_DEL_PAQUETE>
+```
+- Arch Linux: See build instructions below.
+- Other Linux distributions: See build instructions below.
+- MacOS: See build instructions below.
+
 ## Usage
 ```bash
 cim [format] <input> <output> [options]
@@ -65,7 +88,7 @@ cargo install --path .
   - [x] deb
   - [x] rpm
   - [ ] pacman
-  - [ ] Windows installer
+  - [x] Windows installer
   - [x] Windows exe
   - [ ] macOS brew
 
