@@ -56,7 +56,9 @@ sudo dnf install <URL_DEL_PAQUETE>
 
 ## Usage
 ```bash
-cim [format] <input> <output> [options]
+Convert images to different formats
+
+Usage: cim.exe [OPTIONS] <format> <input> [output]
 
 Arguments:
   <format>  The desire file Format
@@ -64,11 +66,11 @@ Arguments:
   [output]  Output file/directory path *(optional)
 
 Options:
-  -w, --width <value>    Width of the output image (only for SVG to image) [default: 0]
-  -h, --height <value>   Height of the output image (only for SVG to image) [default: 0]
+  -w, --width <value>    Width of the output image (only for SVG to image) [default: 32]
+  -h, --height <value>   Height of the output image (only for SVG to image) [default: 32]
   -q, --quality <value>  Quality of the output image (only for image to WebP) [default: 100]
+  -v, --vnumber          Prints the version number to the standard output
       --help             Prints help information
-  -v, --vnumber          Prints the version number
   -V, --version          Print version
 ```
 
