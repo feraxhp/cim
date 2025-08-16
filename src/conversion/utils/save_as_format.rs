@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 use image::{Rgba, Rgb, ImageBuffer, ImageFormat, DynamicImage};
+use std::io::Cursor; 
+use tokio::fs;
 
 fn rgba_to_rgb(rgba: ImageBuffer<Rgba<u8>, Vec<u8>>) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
     let (width, height) = rgba.dimensions();
@@ -17,7 +19,7 @@ fn rgba_to_rgb(rgba: ImageBuffer<Rgba<u8>, Vec<u8>>) -> ImageBuffer<Rgb<u8>, Vec
     rgb_image
 }
 
-pub(crate) fn save_as_format(
+pub(crate) async fn save_as_format(
     img: DynamicImage,
     output: &PathBuf,
     format: ImageFormat
@@ -31,9 +33,10 @@ pub(crate) fn save_as_format(
     } else {
         img
     };
-
-    // save image with specified Format
-    rgb_img.save_with_format(output, format)?;
-
+    
+    let mut buffer = Cursor::new(Vec::new());
+    rgb_img.write_to(&mut buffer, format)?;
+    
+    fs::write(output, buffer.get_ref()).await?;
     Ok(())
 }

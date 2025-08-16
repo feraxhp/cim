@@ -1,16 +1,16 @@
 use resvg::usvg::{Tree, Options, tiny_skia_path};
-use std::fs;
+use tokio::fs;
 use std::path::PathBuf;
 use image::{DynamicImage, RgbaImage};
 
-pub(crate) fn load_svg(
+pub(crate) async fn load_svg(
     svg_path: &PathBuf,
     width: u32,
     height: u32
 ) -> Result<DynamicImage, Box<dyn std::error::Error>> {
 
     // load SVG
-    let svg_data = fs::read(svg_path)?;
+    let svg_data = fs::read(svg_path).await?;
 
     let options = Options::default();
     let tree = Tree::from_data(&svg_data, &options)?;

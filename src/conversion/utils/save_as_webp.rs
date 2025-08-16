@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use image::{DynamicImage, EncodableLayout};
 use webp::Encoder;
 
-pub(crate) fn save_as_webp(
+pub(crate) async fn save_as_webp(
     img: DynamicImage,
     output_path: &PathBuf,
     quality: f32
@@ -11,7 +11,7 @@ pub(crate) fn save_as_webp(
     let webp_data = encoder.encode(quality); // Calidad de compresión
 
     // save WebP
-    std::fs::write(output_path, webp_data.as_bytes())?;
+    tokio::fs::write(output_path, webp_data.as_bytes()).await?;
 
     Ok(())
 }

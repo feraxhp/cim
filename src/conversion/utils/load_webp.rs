@@ -2,10 +2,11 @@ use std::error;
 use std::path::PathBuf;
 use image::{DynamicImage, RgbaImage};
 use webp::Decoder;
+use tokio::fs;
 
-pub(crate) fn load_webp(input_path: &PathBuf) -> Result<DynamicImage, Box<dyn error::Error>> {
+pub(crate) async fn load_webp(input_path: &PathBuf) -> Result<DynamicImage, Box<dyn error::Error>> {
     // Load WebP image
-    let webp_data = std::fs::read(input_path)?;
+    let webp_data = fs::read(input_path).await?;
     let decoder = Decoder::new(&webp_data);
     let webp_image = decoder.decode().unwrap();
 
