@@ -18,7 +18,7 @@ pub(crate) fn path_to_absolute(path: &PathBuf) -> Result<PathBuf, String> {
 
             match remainder_path.absolutize_from(home_path) {
                 Ok(path) => { Ok(path.to_path_buf()) }
-                Err(error) => Err(format!("{:#?}", error))
+                Err(error) => Err(format!("{:?}", error))
             }
         } else {
             Err("Could not determine the home directory".to_string())
@@ -29,9 +29,9 @@ pub(crate) fn path_to_absolute(path: &PathBuf) -> Result<PathBuf, String> {
         Ok(current) => {
             match path.absolutize_from(current) {
                 Ok(path) => { Ok(path.to_path_buf()) }
-                Err(error) => Err(format!("{:#?}", error))
+                Err(error) => Err(format!("{:?}", error))
             }
         }
-        Err(error) => Err(format!("{:#?}", error))
+        Err(error) => Err(format!("{:?}", error))
     }
 }
