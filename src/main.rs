@@ -7,6 +7,8 @@ use color_print::{cformat, cprintln};
 use futures::stream::{self, StreamExt};
 use std::path::PathBuf;
 use std::process::exit;
+use std::sync::Arc;
+use std::sync::Mutex;
 use std::{env};
 use indicatif::{MultiProgress, ProgressBar};
 
@@ -57,6 +59,7 @@ async fn main() {
     
     let amound = images.len();
     let stream_de_tareas = stream::iter(0..amound);
+    let errors: Arc<Mutex<usize>> = Arc::new(Mutex::new(0));
     
     progress.set_message(cformat!("Conveting images <m>0</>/<g>{}</> :: <c>{}</>", amound, concurrent));
     stream_de_tareas.for_each_concurrent(concurrent, |i| {
@@ -64,23 +67,26 @@ async fn main() {
         let name = image.clone().file_name().unwrap().to_str().unwrap().to_string();
         let output = output.clone();
         let options = options.clone();
-        progress.set_message(cformat!("Conveting images <m>{}</>/<g>{}</> :: <c>{}</>", i + 1, amound, concurrent));
+        let errors = errors.clone();
         let mpr = &mprogres;
         
+        progress.set_message(cformat!("Conveting images <m>{}</>/<g>{}</> :: <c>{}</>", i + 1, amound, concurrent));
         async move {
             let prog = mpr.add(ProgressBar::new_spinner());
             let prog = Spinner::sub_proccess(&name, prog);
             
             match convert(&image, &output, &options).await {
-                Ok((_, o)) => {
-                    let msg = cformat!("{} -> {}", name, o);
+                Ok(o) => {
+                    let msg = cformat!("{} -> <c>{}</>", name, o);
                     
-                    prog.set_style(Styles::success2());
+                    prog.set_style(Styles::success());
                     prog.finish_with_message(msg);
                 }
-                Err(s) => {
-                    let msg = cformat!("<r> ✕</> {}", s);
+                Err(e) => {
+                    let msg = cformat!("<r>{}</> ← <m>{}</>", e, &image.into_os_string().to_str().unwrap().to_string());
                     
+                    let mut errors = errors.lock().unwrap();
+                    *errors += 1;
                     prog.set_style(Styles::error());
                     prog.finish_with_message(msg);
                 }
@@ -88,6 +94,25 @@ async fn main() {
         }
     }).await;
     
-    progress.set_style(Styles::success());
-    progress.finish_with_message("Finished");
+    progress.finish_and_clear();
+    
+    let final_errors = errors.lock().unwrap().clone();
+    
+    if amound < 2 { exit(0) }
+    println!("\n");
+    match final_errors {
+        0 => {
+            cprintln!("<g>* <y,i>Conversion</y,i> finish successfully</>");
+            cprintln!("  <g>-> <c>{} <g>images converted</>", amound)
+        }
+        f if f == amound => {
+            cprintln!("<r>* <m,i>Conversion</m,i> completly fails</>");
+            cprintln!("  <r>-> <m>{} <r>fails conversions</>", amound)
+        }
+        f => {
+            cprintln!("<y>* <m,i>Conversion</m,i> finish with errors</>");
+            cprintln!("  <g>-> <c>{} <g>images converted</>", amound - f);
+            cprintln!("  <r>-> <m>{} <r>fails conversions</>", f)
+        }
+    }
 }

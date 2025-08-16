@@ -84,12 +84,6 @@ impl Styles {
     
     pub fn success() -> ProgressStyle {
         ProgressStyle::default_spinner().tick_strings(
-            &[ cformat!("").as_str() ]
-        )
-    }
-    
-    pub fn success2() -> ProgressStyle {
-        ProgressStyle::default_spinner().tick_strings(
             &[ cformat!("<g> ✓</>").as_str() ]
         )
     }
