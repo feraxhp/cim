@@ -66,12 +66,13 @@ Arguments:
   [output]  Output file/directory path *(optional)
 
 Options:
-  -w, --width <value>    Width of the output image (only for SVG to image) [default: 32]
-  -h, --height <value>   Height of the output image (only for SVG to image) [default: 32]
-  -q, --quality <value>  Quality of the output image (only for image to WebP) [default: 100]
-  -v, --vnumber          Prints the version number to the standard output
-      --help             Prints help information
-  -V, --version          Print version
+  -c, --concurrent [<concurrent>]  The number of concurrent operations [default: 4]
+  -w, --width <value>              Width of the output image (only for SVG to image) [default: 32]
+  -h, --height <value>             Height of the output image (only for SVG to image) [default: 32]
+  -q, --quality <value>            Quality of the output image (only for image to WebP) [default: 100]
+  -v, --vnumber                    Prints the version number to the standard output
+      --help                       Prints help information
+  -V, --version                    Print version
 ```
 
 ## Build and Run
