@@ -1,6 +1,6 @@
 use color_print::cformat;
 
-const VALID_FORMATS: [&str; 20] = [
+pub const VALID_FORMATS: [&str; 20] = [
   /* ImageFormat::Png */  "png",
   /* ImageFormat::Jpeg */  "jpg", "jpeg",
   /* ImageFormat::Gif */  "gif",

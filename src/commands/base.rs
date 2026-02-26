@@ -1,7 +1,7 @@
 use clap::{arg, command, value_parser, ArgAction, Command};
 
 use crate::commands::parsers::version::show_version;
-use crate::tools::format;
+use crate::tools::format::{self, VALID_FORMATS};
 use crate::commands::parsers::path::path;
 
 
@@ -10,7 +10,9 @@ pub fn command() -> Command {
             .about("Convert images to different formats")
             .disable_help_flag(true)
             .args([
-                arg!(<format> "The desire file Format").value_parser(format::is_valid_format)
+                arg!(<format> "The desire file Format")
+                    .value_names(VALID_FORMATS)
+                    .value_parser(format::is_valid_format)
                 ,
                 arg!(-c --concurrent [concurrent] "The number of concurrent operations")
                     .default_value("4")

@@ -13,12 +13,13 @@ webp = "0.3.0"
 resvg = "0.45.0"
 color-print = "0.3.7"
 tiny-skia = "0.11.4"
-clap = { version = "4.5.16", features = ["cargo"] }
+clap = { version = "4.5.60", features = ["cargo"] }
 path-absolutize = "3.1.1"
 tokio = { version = "1.47.1", features = ["full", "rt", "rt-multi-thread", "macros"] }
 indicatif = "0.18.0"
 futures = "0.3.31"
 rand = "0.9.2"
+clap_complete = "4.5.66"
 
 [build-dependencies]
 winres = "0.1"
