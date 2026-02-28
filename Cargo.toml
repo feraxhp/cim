@@ -1,11 +1,16 @@
 [package]
-name = "cim"
+name = "cim-cli"
 version = "0.2.0-alpha"
 edition = "2024"
 license = "MIT"
 authors = ["feraxhp <feraxhp+gh@gmail.com>"]
 description = "A simple CLI tool to convert between image formats"
-homepage = "https://github.com/feraxhp/cim"
+repository = "https://github.com/feraxhp/cim"
+keywords = [
+    "convert",
+    "image",
+    "cli",
+]
 
 [dependencies]
 rand = "0.9.2"
@@ -20,16 +25,22 @@ path-absolutize = "3.1.1"
 clap = { version = "4.5.60", features = ["cargo"] }
 tokio = { version = "1.47.1", features = ["full", "rt", "rt-multi-thread", "macros"] }
 
+[[bin]]
+name = "cim"
+path = "src/main.rs"
+
 [target.'cfg(windows)'.build-dependencies]
 winres = "0.1"
 
 [package.metadata.generate-rpm]
+name = "cim"
 url="https://github.com/feraxhp/cim"
 assets = [
     { source = "target/release/cim", dest = "/usr/bin/cim", mode = "755" },
 ]
 
 [package.metadata.deb]
+name = "cim"
 depends="$auto"
 assets = [
     ["target/release/cim", "usr/bin/", "755"],
