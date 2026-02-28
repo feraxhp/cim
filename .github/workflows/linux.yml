@@ -8,34 +8,62 @@ env:
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-
     permissions:
       contents: write
 
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - target: x86_64-unknown-linux-gnu
+            name: x86_64
+            linker: ""
+          - target: aarch64-unknown-linux-gnu
+            name: aarch64
+            linker: gcc-aarch64-linux-gnu
+          - target: armv7-unknown-linux-gnueabihf
+            name: armv7
+            linker: gcc-arm-linux-gnueabihf
+
     steps:
       - uses: actions/checkout@v4
-      - name: Build
-        run: cargo build --release --verbose
 
-      - name: install cargo-deb
-        run: cargo install cargo-deb
+      - name: Install Rust target
+        run: rustup target add ${{ matrix.target.target }}
 
-      - name: install cargo-generate-rpm
-        run: cargo install cargo-generate-rpm
+      - name: Install cross-compilation tools
+        if: matrix.target.linker != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ matrix.target.linker }}
 
-      - name: Generate DEB package
-        run: cargo deb
+      - name: Build for ${{ matrix.target.name }}
+        run: cargo build --release --target ${{ matrix.target.target }}
+        env:
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+          CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER: arm-linux-gnueabihf-gcc
 
-      - name: Generate RPM package
-        run: cargo generate-rpm
+      - name: Install packaging tools
+        run: cargo install cargo-deb cargo-generate-rpm
 
-      - name: get version
+      - name: Generate DEB Package
+        run: cargo deb --target ${{ matrix.target.target }} --no-build
+
+      - name: Generate RPM Package
+        run: cargo generate-rpm --target ${{ matrix.target.target }}
+
+      - name: Get version
         id: get_version
-        run: echo "version=$(./target/release/cim -v)" >> $GITHUB_ENV
+        run: echo "version=$(grep "^version = \"" ./Cargo.toml | cut -d'"' -f2)" >> $GITHUB_ENV
 
-      - uses: AButler/upload-release-assets@v3.0
-        name: Upload release assets
+      - name: Prepare Binary for upload
+        run: |
+          TARGET="target/${{ matrix.target.target }}/release"
+          mv "$TARGET/cim" "$TARGET/cim-${{ matrix.target.name }}-v${{ env.version }}"
+
+      - name: Upload release assets
+        uses: AButler/upload-release-assets@v3.0
         with:
-          files: "target/debian/cim*.deb;target/generate-rpm/cim*.rpm;target/release/cim"
+          files: "target/${{ matrix.target.target }}/debian/*.deb;target/${{ matrix.target.target }}/generate-rpm/*.rpm;target/${{ matrix.target.target }}/release/cim-*"
           repo-token: ${{ github.token }}
           release-tag: "v${{ env.version }}"
