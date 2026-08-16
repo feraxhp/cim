@@ -34,6 +34,7 @@ winres = "0.1"
 
 [package.metadata.generate-rpm]
 name = "cim"
+version = "0.3.0_alpha"
 url="https://github.com/feraxhp/cim"
 assets = [
     { source = "target/release/cim", dest = "/usr/bin/cim", mode = "755" },
