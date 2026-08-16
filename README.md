@@ -23,11 +23,6 @@ A simple CLI tool written in Rust for easily converting between various image fo
 - SVG
 
 > [!Note]
-> `svg` is only supported as input format.
-> And supports resizing.
-> - _width_ and _height_ are required.
-
-> [!Note]
 > `webp` supports lossless and lossy compression.
 >  - _quality_ is required.
 
@@ -58,7 +53,7 @@ sudo dnf install <URL_DEL_PAQUETE>
 ```bash
 Convert images to different formats
 
-Usage: cim.exe [OPTIONS] <format> <input> [output]
+Usage: cim [OPTIONS] <format> <input> [output]
 
 Arguments:
   <format>  The desire file Format
@@ -67,8 +62,7 @@ Arguments:
 
 Options:
   -c, --concurrent [<concurrent>]  The number of concurrent operations [default: 4]
-  -w, --width <value>              Width of the output image (only for SVG to image) [default: 32]
-  -h, --height <value>             Height of the output image (only for SVG to image) [default: 32]
+  -s, --size <value>               size for the output image
   -q, --quality <value>            Quality of the output image (only for image to WebP) [default: 100]
   -v, --vnumber                    Prints the version number to the standard output
       --help                       Prints help information
