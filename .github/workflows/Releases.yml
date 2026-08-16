@@ -19,10 +19,11 @@ env:
 jobs:
   build-linux:
     if: ${{ inputs.linux || inputs.linux == null }}
+    uses: feraxhp/ship-rs/.github/workflows/linux.yml@v0.2.0
     permissions:
       contents: write
-    name: 🖥️ Linux Build
-    uses: ./.github/workflows/linux.yml
+    with:
+      binary: cim
 
   build-windows:
     if: ${{ inputs.windows || inputs.windows == null }}
