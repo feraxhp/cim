@@ -15,6 +15,7 @@ use indicatif::{MultiProgress, ProgressBar};
 use crate::animations::spinners::Spinner;
 use crate::animations::styles::Styles;
 use crate::conversion::main::{convert, Options};
+use crate::conversion::utils::rezise::Size;
 use crate::tools::files::get_images;
 
 
@@ -28,13 +29,12 @@ async fn main() {
 
     let options = Options {
         format: conversion.get_one::<String>("format").unwrap().to_lowercase(),
-        width: conversion.get_one::<u32>("width").unwrap().to_owned(),
-        height: conversion.get_one::<u32>("height").unwrap().to_owned(),
+        size: conversion.get_one::<Size>("size").map(|s| s.to_owned()),
         quality: conversion.get_one::<f32>("quality").unwrap().to_owned()
     };
     
     let concurrent = conversion.get_one::<usize>("concurrent").unwrap().to_owned();
-
+    
     let input = conversion.get_one::<PathBuf>("input").unwrap().clone();
     let output = match conversion.get_one::<PathBuf>("output") {
         Some(path_) => path_.clone(),
@@ -58,11 +58,11 @@ async fn main() {
     };
     
     let amound = images.len();
-    let stream_de_tareas = stream::iter(0..amound);
+    let stream_of_tasks = stream::iter(0..amound);
     let errors: Arc<Mutex<usize>> = Arc::new(Mutex::new(0));
     
     progress.set_message(cformat!("Conveting images <m>0</>/<g>{}</> :: <c>{}</>", amound, concurrent));
-    stream_de_tareas.for_each_concurrent(concurrent, |i| {
+    stream_of_tasks.for_each_concurrent(concurrent, |i| {
         let image = images[i].clone();
         let name = image.clone().file_name().unwrap().to_str().unwrap().to_string();
         let output = output.clone();
@@ -77,7 +77,10 @@ async fn main() {
             
             match convert(&image, &output, &options).await {
                 Ok(o) => {
-                    let msg = cformat!("{} -> <c>{}</>", name, o);
+                    let msg = match o.warning {
+                        Some(warning) => cformat!("<y>{}</>: {} -> <c>{}</>", warning, name, o.path),
+                        None => cformat!("{} -> <c>{}</>", name, o.path),
+                    };
                     
                     prog.set_style(Styles::success());
                     prog.finish_with_message(msg);

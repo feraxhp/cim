@@ -3,10 +3,12 @@ use tokio::fs;
 use std::path::PathBuf;
 use image::{DynamicImage, RgbaImage};
 
+use crate::conversion::utils::rezise::Size;
+
+
 pub(crate) async fn load_svg(
     svg_path: &PathBuf,
-    width: u32,
-    height: u32
+    size: Option<Size>,
 ) -> Result<DynamicImage, Box<dyn std::error::Error>> {
 
     // load SVG
@@ -15,8 +17,16 @@ pub(crate) async fn load_svg(
     let options = Options::default();
     let tree = Tree::from_data(&svg_data, &options)?;
 
-    let width = if width == 0 { tree.size().width() as u32 } else { width };
-    let height = if height == 0 { tree.size().height() as u32 } else { height };
+    let size = size.unwrap_or_else(|| {
+        let size = tree.size();
+        Size::new(
+            size.width() as u32,
+            size.height() as u32,
+        )
+    });
+
+    let width = size.width();
+    let height = size.height();
 
     let mut pixmap = tiny_skia::Pixmap::new(width, height).ok_or("Incorrect svg Format")?;
     let mut pixmapmut = pixmap.as_mut();

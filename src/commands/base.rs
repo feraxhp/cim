@@ -1,6 +1,7 @@
 use clap::{arg, command, value_parser, ArgAction, Command};
 
 use crate::commands::parsers::version::show_version;
+use crate::conversion::utils::rezise::Size;
 use crate::tools::format;
 use crate::commands::parsers::path::path;
 
@@ -24,15 +25,9 @@ pub fn command() -> Command {
                     .value_hint(clap::ValueHint::DirPath)
                     .value_parser(path)
                 ,
-                arg!(-w --width <value> "Width of the output image (only for SVG to image)")
+                arg!(-s --size <value> "size for the output image")
                     .required(false)
-                    .default_value("32")
-                    .value_parser(value_parser!(u32))
-                ,
-                arg!(-h --height <value> "Height of the output image (only for SVG to image)")
-                    .required(false)
-                    .default_value("32")
-                    .value_parser(value_parser!(u32))
+                    .value_parser(Size::parse)
                 ,
                 arg!(-q --quality <value> "Quality of the output image (only for image to WebP)")
                     .required(false)
